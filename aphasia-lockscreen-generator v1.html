@@ -565,9 +565,10 @@
     var cvs = document.getElementById('lsCanvas');
     var ctx = cvs.getContext('2d');
 
-    /* ── Fixed card extent: extends from top margin to just above the
-       bottom margin so the logo and website link sit on the white card. ── */
-    var cardTop = 200;
+    /* ── Fixed card extent: starts below the typical lock-screen clock
+       area and extends to just above the bottom margin so the logo and
+       website link sit on the white card. ── */
+    var cardTop = 750;
     var cardBot = CH - CARD_MARGIN;
     var cardH   = cardBot - cardTop;
 
