@@ -342,29 +342,6 @@
     }
 
     /* ────────────────────────────────────
-       2b. MY NAME / MY PHONE  (centered, optional)
-       ──────────────────────────────────── */
-    if (data.myName) {
-      y += 58;
-      if (draw) {
-        ctx.textAlign = 'center';
-        ctx.fillStyle = COL.navy;
-        ctx.font = 'bold 44px Helvetica, Arial, sans-serif';
-        ctx.fillText('My name is ' + data.myName, CX, y);
-      }
-    }
-    if (data.myPh) {
-      y += 58;
-      if (draw) {
-        ctx.textAlign = 'center';
-        ctx.fillStyle = COL.navy;
-        ctx.font = 'bold 44px Helvetica, Arial, sans-serif';
-        ctx.fillText('My phone number is ' + data.myPh, CX, y);
-      }
-    }
-    if (data.myName || data.myPh) y += 10;
-
-    /* ────────────────────────────────────
        3. COMMUNICATION AREAS  (bordered)
        ──────────────────────────────────── */
     var aTop = y;
@@ -439,6 +416,48 @@
         ctx.strokeStyle = COL.border;
         ctx.lineWidth = bw;
         ctx.strokeRect(boxX, sTop, boxW, sBot - sTop);
+      }
+    }
+
+    /* ────────────────────────────────────
+       4b. MY DETAILS (bordered, optional)
+       ──────────────────────────────────── */
+    if (data.myName || data.myPh) {
+      y += 32;
+      var mTop = y;
+      y += 54;
+
+      if (data.myName) {
+        if (draw) {
+          ctx.textAlign = 'left';
+          ctx.fillStyle = COL.green;
+          ctx.font = 'bold 40px Helvetica, Arial, sans-serif';
+          ctx.fillText('▪', INNER_X + 15, y + 2);
+          ctx.fillStyle = COL.body;
+          ctx.font = '42px Helvetica, Arial, sans-serif';
+          ctx.fillText('My name is ' + data.myName, INNER_X + 52, y);
+        }
+        y += 54;
+      }
+      if (data.myPh) {
+        if (draw) {
+          ctx.textAlign = 'left';
+          ctx.fillStyle = COL.green;
+          ctx.font = 'bold 40px Helvetica, Arial, sans-serif';
+          ctx.fillText('▪', INNER_X + 15, y + 2);
+          ctx.fillStyle = COL.body;
+          ctx.font = '42px Helvetica, Arial, sans-serif';
+          ctx.fillText('My phone number is ' + data.myPh, INNER_X + 52, y);
+        }
+        y += 54;
+      }
+      y -= 26;
+      var mBot = y;
+
+      if (draw) {
+        ctx.strokeStyle = COL.border;
+        ctx.lineWidth = bw;
+        ctx.strokeRect(boxX, mTop, boxW, mBot - mTop);
       }
     }
 
