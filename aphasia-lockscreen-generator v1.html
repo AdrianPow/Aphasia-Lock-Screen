@@ -275,25 +275,94 @@
     }
 
     /* ────────────────────────────────────
-       2. SUBTITLE  (centered, two lines)
+       2. SUBTITLE  (mixed-weight, centered, auto-wrapped)
        ──────────────────────────────────── */
     if (data.hasSubtitle) {
       y += 70;
-      if (draw) {
-        ctx.textAlign = 'center';
-        ctx.fillStyle = COL.navy;
-        ctx.font = '50px Helvetica, Arial, sans-serif';
-        ctx.fillText('Aphasia is an', CX, y);
+      var subSize = 54;
+      var subReg  = subSize + 'px Helvetica, Arial, sans-serif';
+      var subBold = 'bold ' + subSize + 'px Helvetica, Arial, sans-serif';
+      var subLineH = 68;
+
+      /* Build a word list with weight per word */
+      var subSegments = [
+        { text: 'Aphasia is an',                 bold: false },
+        { text: 'acquired language difficulty',  bold: true  }
+      ];
+      var subWords = [];
+      subSegments.forEach(function (seg) {
+        seg.text.split(' ').forEach(function (w) {
+          subWords.push({ w: w, b: seg.bold });
+        });
+      });
+
+      ctx.font = subReg;
+      var subSpaceW = ctx.measureText(' ').width;
+
+      /* Greedy wrap using each word's own weight to measure */
+      var subLines = [[]];
+      var subLineW = 0;
+      for (var si = 0; si < subWords.length; si++) {
+        ctx.font = subWords[si].b ? subBold : subReg;
+        var wW  = ctx.measureText(subWords[si].w).width;
+        var add = (subLines[subLines.length - 1].length ? subSpaceW : 0) + wW;
+        if (subLineW + add > INNER_W && subLines[subLines.length - 1].length) {
+          subLines.push([]);
+          subLineW = wW;
+          subLines[subLines.length - 1].push({ w: subWords[si].w, b: subWords[si].b, ww: wW });
+        } else {
+          subLines[subLines.length - 1].push({ w: subWords[si].w, b: subWords[si].b, ww: wW });
+          subLineW += add;
+        }
       }
-      y += 62;
-      if (draw) {
-        ctx.font = 'bold 50px Helvetica, Arial, sans-serif';
-        ctx.fillText('acquired language difficulty', CX, y);
+
+      /* Draw each wrapped line, centered on CX */
+      for (var sli = 0; sli < subLines.length; sli++) {
+        var sLine = subLines[sli];
+        var totalW = 0;
+        for (var sk = 0; sk < sLine.length; sk++) {
+          totalW += sLine[sk].ww + (sk > 0 ? subSpaceW : 0);
+        }
+        if (draw) {
+          var sx = CX - totalW / 2;
+          ctx.textAlign = 'left';
+          ctx.fillStyle = COL.navy;
+          for (var sj = 0; sj < sLine.length; sj++) {
+            ctx.font = sLine[sj].b ? subBold : subReg;
+            if (sj > 0) sx += subSpaceW;
+            ctx.fillText(sLine[sj].w, sx, y);
+            sx += sLine[sj].ww;
+          }
+        }
+        y += subLineH;
       }
-      y += 55;
+      y += 2;
     } else {
       y += 50;
     }
+
+    /* ────────────────────────────────────
+       2b. MY NAME / MY PHONE  (centered, optional)
+       ──────────────────────────────────── */
+    if (data.myName) {
+      y += 58;
+      if (draw) {
+        ctx.textAlign = 'center';
+        ctx.fillStyle = COL.navy;
+        ctx.font = 'bold 44px Helvetica, Arial, sans-serif';
+        ctx.fillText('My name is ' + data.myName, CX, y);
+      }
+    }
+    if (data.myPh) {
+      y += 58;
+      if (draw) {
+        ctx.textAlign = 'center';
+        ctx.fillStyle = COL.navy;
+        ctx.font = 'bold 44px Helvetica, Arial, sans-serif';
+        ctx.fillText('My phone number is ' + data.myPh, CX, y);
+      }
+    }
+    if (data.myName || data.myPh) y += 10;
 
     /* ────────────────────────────────────
        3. COMMUNICATION AREAS  (bordered)
@@ -456,6 +525,8 @@
       if (v) sups.push(v);
     });
 
+    var myName = document.getElementById('lsName').value.trim();
+    var myPh   = document.getElementById('lsPhone').value.trim();
     var emName = document.getElementById('lsEmName').value.trim();
     var emPh   = document.getElementById('lsEmPhone').value.trim();
 
@@ -464,6 +535,8 @@
       hasSubtitle: stmt.toLowerCase().indexOf('aphasia') >= 0,
       areas:       areas,
       sups:        sups,
+      myName:      myName,
+      myPh:        myPh,
       emName:      emName,
       emPh:        emPh,
       hasEm:       !!(emName || emPh),
@@ -473,30 +546,18 @@
     var cvs = document.getElementById('lsCanvas');
     var ctx = cvs.getContext('2d');
 
-    /* ── Pass 1: MEASURE ── */
-    var idealTop = 460;
-    var cardBot  = layoutCard(ctx, data, idealTop, false);
-    var cardH    = cardBot - idealTop;
-
-    /* Reserve 300px for logo area at bottom */
-    var logoAreaH = 300;
-    var maxBot    = CH - logoAreaH;
-
-    /* Try to vertically centre the card in the space above the logo area */
-    var availH  = CH - logoAreaH;
-    var cardTop = Math.floor((availH - cardH) / 2);
-
-    /* Clamp: don't go above 200px or below maxBot */
-    if (cardTop < 200) cardTop = 200;
-    if (cardTop + cardH > maxBot) cardTop = maxBot - cardH;
-    if (cardTop < 80) cardTop = 80;
+    /* ── Fixed card extent: extends from top margin to just above the
+       bottom margin so the logo and website link sit on the white card. ── */
+    var cardTop = 200;
+    var cardBot = CH - CARD_MARGIN;
+    var cardH   = cardBot - cardTop;
 
     /* ── Pass 2: DRAW ── */
     /* Background */
     ctx.fillStyle = COL.navy;
     ctx.fillRect(0, 0, CW, CH);
 
-    /* White card */
+    /* White card (extends to bottom) */
     ctx.fillStyle = COL.white;
     rrPath(ctx, CARD_MARGIN, cardTop, CARD_W, cardH, 20);
     ctx.fill();
@@ -504,23 +565,20 @@
     /* Content */
     layoutCard(ctx, data, cardTop, true);
 
-    /* ── Logo + branding ── */
-    var logoY = CH - 250;
+    /* ── Logo + branding, sitting inside the white card at the bottom ── */
+    var logoY = cardBot - 130;
     if (logoReady) {
-      /* Draw the real logo image, sized to ~200px wide */
-      var lw = 200, lh = lw * (logoImg.naturalHeight / logoImg.naturalWidth);
-      ctx.drawImage(logoImg, 80, logoY - lh / 2 + 30, lw, lh);
-      /* Branding text */
-      ctx.fillStyle = COL.green;
+      var lw = 180, lh = lw * (logoImg.naturalHeight / logoImg.naturalWidth);
+      ctx.drawImage(logoImg, CARD_MARGIN + 60, logoY - lh / 2, lw, lh);
+      ctx.fillStyle = COL.navy;
       ctx.font = 'bold 52px Helvetica, Arial, sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('Learn more at aphasia.org.au', 80 + lw + 30, logoY + 40);
+      ctx.fillText('Learn more at aphasia.org.au', CARD_MARGIN + 60 + lw + 30, logoY + 18);
     } else {
-      /* Fallback: text only */
-      ctx.fillStyle = COL.green;
+      ctx.fillStyle = COL.navy;
       ctx.font = 'bold 52px Helvetica, Arial, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('Learn more at aphasia.org.au', CX, logoY + 40);
+      ctx.fillText('Learn more at aphasia.org.au', CX, logoY + 18);
     }
 
     /* ── Show preview ── */
