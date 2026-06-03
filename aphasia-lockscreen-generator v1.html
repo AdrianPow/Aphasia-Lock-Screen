@@ -8,9 +8,10 @@
   Logo is embedded as base64 — no external image dependency.
 -->
 <style>
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
+    #banner .layer-one { display: none !important; }
+    #banner .layer-two { width: 100% !important; grid-template-columns: 1fr !important; }
     #banner .columns-2-1 { grid-template-columns: 1fr !important; }
-    #banner .columns-2-1 > *:nth-child(2) { display: none !important; }
   }
   .aaa-ls *, .aaa-ls *::before, .aaa-ls *::after {
     box-sizing: border-box; margin: 0; padding: 0;
