@@ -9,11 +9,18 @@
 -->
 <style>
   @media (max-width: 900px) {
-    #banner.layered-section { grid-template-columns: 1fr !important; }
+    #banner.layered-section,
+    #banner .layer-one,
+    #banner .layer-two,
+    #banner .columns-2-1 { grid-template-columns: 1fr !important; }
     #banner .layer-one { display: none !important; }
-    #banner .layer-two { display: block !important; width: 100% !important; }
-    #banner .layer-two > div { width: 100% !important; max-width: 100% !important; flex: none !important; }
-    #banner .m-hide { display: none !important; }
+    #banner .m-hide,
+    #banner .img-fill,
+    #banner .flex-har { display: none !important; }
+    #banner .layer-two,
+    #banner .layer-two > *,
+    #banner .layer-two .pr,
+    #banner .container { width: 100% !important; max-width: 100% !important; flex: none !important; }
   }
   .aaa-ls *, .aaa-ls *::before, .aaa-ls *::after {
     box-sizing: border-box; margin: 0; padding: 0;
