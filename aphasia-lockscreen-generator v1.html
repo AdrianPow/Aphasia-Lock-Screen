@@ -10,8 +10,9 @@
 <style>
   @media (max-width: 900px) {
     #banner .layer-one { display: none !important; }
-    #banner .layer-two { width: 100% !important; grid-template-columns: 1fr !important; }
-    #banner .columns-2-1 { grid-template-columns: 1fr !important; }
+    #banner .layer-two { display: block !important; width: 100% !important; }
+    #banner .layer-two > div { width: 100% !important; max-width: 100% !important; flex: none !important; }
+    #banner .m-hide { display: none !important; }
   }
   .aaa-ls *, .aaa-ls *::before, .aaa-ls *::after {
     box-sizing: border-box; margin: 0; padding: 0;
