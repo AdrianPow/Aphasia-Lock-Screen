@@ -8,20 +8,6 @@
   Logo is embedded as base64 — no external image dependency.
 -->
 <style>
-  @media (max-width: 900px) {
-    #banner.layered-section,
-    #banner .layer-one,
-    #banner .layer-two,
-    #banner .columns-2-1 { grid-template-columns: 1fr !important; }
-    #banner .layer-one { display: none !important; }
-    #banner .m-hide,
-    #banner .img-fill,
-    #banner .flex-har { display: none !important; }
-    #banner .layer-two,
-    #banner .layer-two > *,
-    #banner .layer-two .pr,
-    #banner .container { width: 100% !important; max-width: 100% !important; flex: none !important; }
-  }
   .aaa-ls *, .aaa-ls *::before, .aaa-ls *::after {
     box-sizing: border-box; margin: 0; padding: 0;
   }
@@ -223,34 +209,6 @@
     if (genBtn) genBtn.addEventListener('click', window._lsGen);
     var dlBtn  = document.getElementById('lsDlBtn');
     if (dlBtn)  dlBtn.addEventListener('click', window._lsDl);
-    _lsBannerFix();
-    window.addEventListener('resize', _lsBannerFix);
-  }
-  /* ── Force the theme page banner full-width on mobile ──
-     The banner uses a multi-column grid that doesn't collapse on small
-     screens, leaving white space beside the title. Inline !important
-     styles set here beat the theme stylesheet regardless of selector. */
-  function _lsBannerFix() {
-    var banner = document.getElementById('banner');
-    if (!banner) return;
-    var mobile = window.innerWidth <= 900;
-    function set(el, prop, val) { if (el) el.style.setProperty(prop, val, 'important'); }
-    function clear(el) { if (el) el.removeAttribute('style'); }
-    var layerOne = banner.querySelector('.layer-one');
-    var layerTwo = banner.querySelector('.layer-two');
-    var imgCol  = layerTwo ? layerTwo.querySelector('.flex-har') : null;
-    var textCol = layerTwo ? layerTwo.querySelector('.pr') : null;
-    if (mobile) {
-      set(banner,   'grid-template-columns', '1fr');
-      set(layerTwo, 'grid-template-columns', '1fr');
-      set(layerTwo, 'width', '100%');
-      set(layerOne, 'display', 'none');
-      set(imgCol,   'display', 'none');
-      set(textCol,  'width', '100%');
-      set(textCol,  'max-width', 'none');
-    } else {
-      [banner, layerOne, layerTwo, imgCol, textCol].forEach(clear);
-    }
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', _lsInit);
