@@ -235,31 +235,21 @@
     if (!banner) return;
     var mobile = window.innerWidth <= 900;
     function set(el, prop, val) { if (el) el.style.setProperty(prop, val, 'important'); }
+    function clear(el) { if (el) el.removeAttribute('style'); }
     var layerOne = banner.querySelector('.layer-one');
     var layerTwo = banner.querySelector('.layer-two');
+    var imgCol  = layerTwo ? layerTwo.querySelector('.flex-har') : null;
+    var textCol = layerTwo ? layerTwo.querySelector('.pr') : null;
     if (mobile) {
-      set(banner, 'display', 'block');
+      set(banner,   'grid-template-columns', '1fr');
+      set(layerTwo, 'grid-template-columns', '1fr');
+      set(layerTwo, 'width', '100%');
       set(layerOne, 'display', 'none');
-      if (layerTwo) {
-        set(layerTwo, 'display', 'block');
-        set(layerTwo, 'width', '100%');
-        set(layerTwo, 'max-width', '100%');
-        var kids = layerTwo.querySelectorAll('*');
-        for (var i = 0; i < kids.length; i++) {
-          set(kids[i], 'max-width', '100%');
-          if (kids[i].classList.contains('m-hide')) set(kids[i], 'display', 'none');
-        }
-        var col = layerTwo.querySelector('.pr, .container, .columns-2-1');
-        set(col, 'width', '100%');
-        set(col, 'grid-template-columns', '1fr');
-      }
+      set(imgCol,   'display', 'none');
+      set(textCol,  'width', '100%');
+      set(textCol,  'max-width', 'none');
     } else {
-      // Clear inline overrides on desktop so the theme layout returns
-      [banner, layerOne, layerTwo].forEach(function (el) { if (el) el.removeAttribute('style'); });
-      if (layerTwo) {
-        var k = layerTwo.querySelectorAll('*');
-        for (var j = 0; j < k.length; j++) k[j].removeAttribute('style');
-      }
+      [banner, layerOne, layerTwo, imgCol, textCol].forEach(clear);
     }
   }
   if (document.readyState === 'loading') {
